@@ -127,15 +127,19 @@ def send(text):
     r.raise_for_status()
 
 
-def main():
-    if sys.stdout:  # pythonw (Agendador de Tarefas) não tem console
-        sys.stdout.reconfigure(encoding="utf-8")
+def load_env():
     env = Path(__file__).with_name(".env")
     if env.exists():  # no PC o token vem do .env
         for line in env.read_text(encoding="utf-8-sig").splitlines():
             k, _, v = line.partition("=")
             if v.strip() and not k.startswith("#"):
                 os.environ.setdefault(k.strip(), v.strip())
+
+
+def main():
+    if sys.stdout:  # pythonw (Agendador de Tarefas) não tem console
+        sys.stdout.reconfigure(encoding="utf-8")
+    load_env()
     seen = json.loads(SEEN.read_text()) if SEEN.exists() else []
     known = set(seen)
     hits = []
