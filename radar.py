@@ -128,7 +128,14 @@ def send(text):
 
 
 def main():
-    sys.stdout.reconfigure(encoding="utf-8")
+    if sys.stdout:  # pythonw (Agendador de Tarefas) não tem console
+        sys.stdout.reconfigure(encoding="utf-8")
+    env = Path(__file__).with_name(".env")
+    if env.exists():  # no PC o token vem do .env
+        for line in env.read_text(encoding="utf-8-sig").splitlines():
+            k, _, v = line.partition("=")
+            if v.strip() and not k.startswith("#"):
+                os.environ.setdefault(k.strip(), v.strip())
     seen = json.loads(SEEN.read_text()) if SEEN.exists() else []
     known = set(seen)
     hits = []
@@ -151,4 +158,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    erro = Path(__file__).with_name("erro.txt")
+    try:
+        main()
+        erro.unlink(missing_ok=True)
+    except Exception as e:
+        if not erro.exists():  # avisa uma vez só, até voltar a funcionar
+            msg = re.sub(r"bot[^/\s]+/", "bot***/", str(e))[:300]  # não vaza o token
+            send(f"⚠️ Radar Workana parou: {html.escape(msg)}")
+            erro.write_text(msg, encoding="utf-8")
+        raise

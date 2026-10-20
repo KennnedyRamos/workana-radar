@@ -16,12 +16,14 @@ python radar.py                       # sem token: só imprime na tela
 $env:TELEGRAM_TOKEN="..."; $env:TELEGRAM_CHAT_ID="..."; python radar.py   # manda no Telegram
 ```
 
-## 3. Rodar 24h grátis no GitHub Actions
-1. Crie um repositório **público** `workana-radar` no GitHub (público = minutos ilimitados; privado estoura os
-   2.000 min/mês grátis rodando a cada 10 min). Os tokens ficam nos Secrets, não no código.
-2. `git init && git add . && git commit -m "radar" && git branch -M main && git remote add origin https://github.com/<voce>/workana-radar.git && git push -u origin main`
-3. Settings → Secrets and variables → Actions → crie `TELEGRAM_TOKEN` e `TELEGRAM_CHAT_ID`.
-4. Aba Actions → `radar` → **Run workflow** para testar na hora.
+## 3. Rodar sozinho no PC (Agendador de Tarefas)
+Coloque `TELEGRAM_TOKEN=` e `TELEGRAM_CHAT_ID=` no `.env` (não vai pro Git) e registre a tarefa `workana-radar`
+(roda `pythonw radar.py` a cada 10 min, sem janela). Só funciona com o PC ligado.
+Se der erro (ex.: Cloudflare bloqueou), chega um único "⚠️ Radar Workana parou" no Telegram.
+
+## 4. (Opcional) Rodar 24h no GitHub Actions
+Precisa de conta GitHub sem bloqueio de cobrança. Secrets `TELEGRAM_TOKEN` e `TELEGRAM_CHAT_ID` já criados;
+reative com `gh workflow enable radar.yml` e **desative a tarefa do PC** pra não receber vaga duplicada.
 
 ## Ajustar
 Tudo no topo do `radar.py`: `SKILLS` (sua stack), `MIN_SCORE`, `MIN_USD` e as listas de palavras.
